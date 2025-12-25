@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ vote['title'] }}</h2>
+<p>{{ vote['description'] }}</p>
+
+{% if existing_vote %}
+    <p><strong>You have already voted.</strong></p>
+{% else %}
+<form method="POST" action="/vote/submit" style="max-width: 400px; width: 100%;">
+    {% for opt in options %}
+        <label style="display: block; margin-bottom: 10px;">
+            <input type="radio" name="option_id" value="{{ opt['id'] }}" required>
+            {{ opt['option_text'] }}
+        </label>
+    {% endfor %}
+    <button type="submit">Submit Vote</button>
+</form>
+{% endif %}
+
+{% endblock %}

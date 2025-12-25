@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Votes</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for v in votes %}
+    <tr>
+        <td>{{ v['id'] }}</td>
+        <td>{{ v['title'] }}</td>
+        <td>
+            {% if v['is_active'] %}
+                <strong style="color: green;">Active</strong>
+            {% else %}
+                Inactive
+            {% endif %}
+        </td>
+        <td>
+            {% if not v['is_active'] %}
+                <a href="/admin/votes/{{ v['id'] }}/activate">Activate</a>
+            {% else %}
+                <a href="/admin/votes/{{ v['id'] }}/deactivate">Deactivate</a>
+            {% endif %}
+
+            &nbsp;|&nbsp;
+
+            <a href="/admin/votes/{{ v['id'] }}/options">Edit Options</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

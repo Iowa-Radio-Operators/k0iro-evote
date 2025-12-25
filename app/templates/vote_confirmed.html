@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Thank You for Voting</h2>
+
+<p>You voted for:</p>
+
+<p style="font-size: 1.2rem; font-weight: bold;">
+    {{ option['option_text'] }}
+</p>
+
+<p>In the vote:</p>
+
+<p style="font-size: 1.1rem;">
+    {{ vote['title'] }}
+</p>
+
+<p><a href="/">Return to Home</a></p>
+{% endblock %}

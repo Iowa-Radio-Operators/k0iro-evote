@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ title }}</title>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZK61XH2VM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PZK61XH2VM');
+  </script>
+</head>
+
+<body>
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <!-- Left side: K0IRO link -->
+    <div class="title-left">
+      <a href="https://www.k0iro.com">Iowa Radio Operators | K0IRO</a>
+    </div>
+
+  <!-- Right side: Navigation -->
+  <div class="title-right">
+      <a href="/">Home</a>
+      <a href="/vote">Vote</a>
+      <a href="/results">Results</a>
+      <a href="/register">Register</a>
+
+      {% if session.get('user') %}
+          {% if session.get('user_is_admin') %}
+              <a href="/admin">Admin</a>
+          {% endif %}
+          <a href="/logout">Logout</a>
+      {% else %}
+          <a href="/login">Login</a>
+      {% endif %}
+  </div>
+  </div>
+
+  <!-- Main Page Content -->
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

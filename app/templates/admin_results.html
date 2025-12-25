@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin Results Control</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Vote</th>
+        <th>Released?</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for v in votes %}
+    <tr>
+        <td>{{ v.title }}</td>
+        <td>{{ "Yes" if v.is_released else "No" }}</td>
+        <td>
+            {% if v.is_released %}
+                <a href="/admin/results/{{ v.id }}/unrelease">Unrelease</a>
+                |
+                <a href="/results/{{ v.id }}">View Public Page</a>
+            {% else %}
+                <a href="/admin/results/{{ v.id }}/release">Release</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="/admin">Back to Admin Dashboard</a>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add Options to Vote: {{ vote['title'] }}</h2>
+
+<form method="POST" style="max-width: 400px; width: 100%;">
+    <label>New Option</label><br>
+    <input type="text" name="option_text" required style="width: 100%; padding: 8px;"><br><br>
+
+    <button type="submit">Add Option</button>
+</form>
+
+<h3>Current Options</h3>
+<ul>
+    {% for opt in options %}
+        <li>{{ opt['option_text'] }}</li>
+    {% endfor %}
+</ul>
+
+<a href="/admin">Back to Admin Dashboard</a>
+{% endblock %}

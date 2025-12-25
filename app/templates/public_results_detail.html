@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Results for: {{ vote.title }}</h2>
+
+<p><strong>Total Votes:</strong> {{ total_votes }}</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Option</th>
+        <th>Votes</th>
+    </tr>
+
+    {% for opt in options %}
+    <tr {% if loop.index0 == 0 %} style="background:#d4ffd4;" {% endif %}>
+        <td>{{ opt.label }}</td>
+        <td>{{ opt.count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

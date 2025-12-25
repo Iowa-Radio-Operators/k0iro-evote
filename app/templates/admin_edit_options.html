@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Edit Options for: {{ vote['title'] }}</h2>
+
+<h3>Existing Options</h3>
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>ID</th>
+        <th>Label</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for opt in options %}
+    <tr>
+        <td>{{ opt['id'] }}</td>
+        <td>{{ opt['label'] }}</td>
+        <td>
+            <a href="/admin/options/{{ opt['id'] }}/delete">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<hr>
+
+<h3>Add New Option</h3>
+<form method="POST" action="/admin/votes/{{ vote['id'] }}/options/add">
+    <label>Option Label:</label>
+    <input type="text" name="label" required>
+    <button type="submit">Add Option</button>
+</form>
+
+<br>
+<a href="/admin/votes">Back to Vote Management</a>
+
+{% endblock %}

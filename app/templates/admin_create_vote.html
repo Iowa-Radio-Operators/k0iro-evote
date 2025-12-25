@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Create New Vote</h2>
+
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="/admin/votes/create">
+    <label>Vote Title:</label><br>
+    <input type="text" name="title" required style="width:300px;"><br><br>
+
+    <button type="submit">Create Vote</button>
+</form>
+
+<br>
+<a href="/admin">Back to Admin Dashboard</a>
+{% endblock %}

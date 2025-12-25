@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Public Results</h2>
+
+{% if votes %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Vote</th>
+        <th>View</th>
+    </tr>
+
+    {% for v in votes %}
+    <tr>
+        <td>{{ v.title }}</td>
+        <td><a href="/results/{{ v.id }}">View Results</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No results have been released yet.</p>
+{% endif %}
+
+{% endblock %}
