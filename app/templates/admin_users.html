@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>User Management</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Callsign</th>
+        <th>Email</th>
+        <th>Admin?</th>
+        <th>Active?</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for u in users %}
+    <tr>
+        <td>{{ u.callsign }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ "Yes" if u.is_admin else "No" }}</td>
+        <td>{{ "Active" if u.is_active else "Inactive" }}</td>
+
+        <td>
+            <!-- Admin Promotion / Demotion -->
+            {% if u.is_admin %}
+                <a href="/admin/users/{{ u.id }}/demote">Remove Admin</a>
+            {% else %}
+                <a href="/admin/users/{{ u.id }}/promote">Make Admin</a>
+            {% endif %}
+            |
+
+            <!-- Activate / Deactivate -->
+            {% if u.is_active %}
+                <a href="/admin/users/{{ u.id }}/deactivate">Deactivate</a>
+            {% else %}
+                <a href="/admin/users/{{ u.id }}/activate">Activate</a>
+            {% endif %}
+            |
+
+            <!-- Delete -->
+            <a href="/admin/users/{{ u.id }}/delete"
+               onclick="return confirm('Delete this user?');">
+               Delete
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="/admin">Back to Admin Dashboard</a>
+{% endblock %}

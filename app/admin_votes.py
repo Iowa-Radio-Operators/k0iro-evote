@@ -80,3 +80,4 @@ def unrelease_results(vote_id):
     conn.commit()
 
     return redirect(url_for('admin_votes.admin_results'))
+

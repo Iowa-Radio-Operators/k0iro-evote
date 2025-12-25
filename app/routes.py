@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from .database import get_db
 from .auth_helpers import admin_required
 
-
 # -------------------------------------------------
 # Main Site Blueprint
 # -------------------------------------------------
@@ -55,7 +54,7 @@ def create_vote():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO votes (title, is_active) VALUES (?, 0)", (title,))
+    cursor.execute("INSERT INTO votes (title, is_active, is_released) VALUES (?, 0, 0)", (title,))
     conn.commit()
 
     new_vote_id = cursor.lastrowid
@@ -180,6 +179,10 @@ def delete_option(option_id):
 
     return redirect(url_for('admin_votes.edit_options', vote_id=vote_id))
 
+
+# -------------------------------------------------
+# Public Results
+# -------------------------------------------------
 @main.route('/results')
 def public_results():
     conn = get_db()
@@ -189,6 +192,7 @@ def public_results():
     votes = cursor.fetchall()
 
     return render_template('public_results.html', votes=votes, title="Results")
+
 
 @main.route('/results/<int:vote_id>')
 def public_results_detail(vote_id):
@@ -222,9 +226,10 @@ def public_results_detail(vote_id):
         title=f"Results for {vote['title']}"
     )
 
-# -------------------------
+
+# -------------------------------------------------
 # Admin Results Control
-# -------------------------
+# -------------------------------------------------
 @admin_votes.route('/admin/results')
 @admin_required
 def admin_results():
@@ -234,15 +239,9 @@ def admin_results():
     cursor.execute("SELECT * FROM votes ORDER BY id DESC")
     votes = cursor.fetchall()
 
-    return render_template(
-        'admin_results.html',
-        votes=votes,
-        title="Admin Results Control"
-    )
+    return render_template('admin_results.html', votes=votes, title="Admin Results Control")
 
-# -------------------------
-# Release Results (make public)
-# -------------------------
+
 @admin_votes.route('/admin/results/<int:vote_id>/release')
 @admin_required
 def release_results(vote_id):
@@ -255,9 +254,6 @@ def release_results(vote_id):
     return redirect(url_for('admin_votes.admin_results'))
 
 
-# -------------------------
-# Unrelease Results (hide from public)
-# -------------------------
 @admin_votes.route('/admin/results/<int:vote_id>/unrelease')
 @admin_required
 def unrelease_results(vote_id):
@@ -268,3 +264,128 @@ def unrelease_results(vote_id):
     conn.commit()
 
     return redirect(url_for('admin_votes.admin_results'))
+
+
+# -------------------------------------------------
+# User Management (Admin Only)
+# -------------------------------------------------
+@admin_votes.route('/admin/users')
+@admin_required
+def admin_users():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, callsign, email, is_admin, is_active FROM users ORDER BY callsign ASC")
+    users = cursor.fetchall()
+
+    return render_template('admin_users.html', users=users, title="User Management")
+
+
+@admin_votes.route('/admin/users/<int:user_id>/activate')
+@admin_required
+def activate_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET is_active = 1 WHERE id = ?", (user_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.admin_users'))
+
+
+@admin_votes.route('/admin/users/<int:user_id>/deactivate')
+@admin_required
+def deactivate_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET is_active = 0 WHERE id = ?", (user_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.admin_users'))
+
+
+@admin_votes.route('/admin/users/<int:user_id>/promote')
+@admin_required
+def promote_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET is_admin = 1 WHERE id = ?", (user_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.admin_users'))
+
+
+@admin_votes.route('/admin/users/<int:user_id>/demote')
+@admin_required
+def demote_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET is_admin = 0 WHERE id = ?", (user_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.admin_users'))
+
+
+@admin_votes.route('/admin/users/<int:user_id>/delete')
+@admin_required
+def delete_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.admin_users'))
+
+@admin_votes.route('/admin/votes/<int:vote_id>/ballots')
+@admin_required
+def view_ballots(vote_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Get vote info
+    cursor.execute("SELECT * FROM votes WHERE id = ?", (vote_id,))
+    vote = cursor.fetchone()
+    if not vote:
+        return "Vote not found", 404
+
+    # Get ballots with user + option labels
+    cursor.execute("""
+        SELECT b.id AS ballot_id, u.callsign, vo.label
+        FROM ballots b
+        JOIN users u ON b.user_id = u.id
+        JOIN vote_options vo ON b.option_id = vo.id
+        WHERE b.vote_id = ?
+        ORDER BY u.callsign ASC
+    """, (vote_id,))
+    ballots = cursor.fetchall()
+
+    return render_template(
+        'admin_ballots.html',
+        vote=vote,
+        ballots=ballots,
+        title=f"Ballots for {vote['title']}"
+    )
+
+@admin_votes.route('/admin/ballots/<int:ballot_id>/delete')
+@admin_required
+def delete_ballot(ballot_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Get vote_id before deleting so we can redirect back
+    cursor.execute("SELECT vote_id FROM ballots WHERE id = ?", (ballot_id,))
+    row = cursor.fetchone()
+
+    if not row:
+        return "Ballot not found", 404
+
+    vote_id = row['vote_id']
+
+    cursor.execute("DELETE FROM ballots WHERE id = ?", (ballot_id,))
+    conn.commit()
+
+    return redirect(url_for('admin_votes.view_ballots', vote_id=vote_id))

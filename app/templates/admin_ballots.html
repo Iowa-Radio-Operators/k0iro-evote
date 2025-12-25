@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Ballots for {{ vote.title }}</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Callsign</th>
+        <th>Selected Option</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for b in ballots %}
+    <tr>
+        <td>{{ b.callsign }}</td>
+        <td>{{ b.label }}</td>
+        <td>
+            <a href="/admin/ballots/{{ b.ballot_id }}/delete"
+               onclick="return confirm('Delete this ballot?');">
+               Delete Ballot
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="/admin/votes">Back to Vote Management</a>
+{% endblock %}

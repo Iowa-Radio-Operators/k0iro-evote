@@ -6,7 +6,7 @@ auth = Blueprint('auth', __name__)
 
 
 # -------------------------------------------------
-# Registration (Call Sign Based)
+# Registration (Call Sign + Email)
 # -------------------------------------------------
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
@@ -14,10 +14,16 @@ def register():
 
     if request.method == 'POST':
         callsign = request.form.get('callsign', '').strip().upper()
+        email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
 
-        if not callsign or not password:
-            error = "Call sign and password are required"
+        if not callsign or not email or not password:
+            error = "Call sign, email, and password are required"
+            return render_template('register.html', title="Register", error=error)
+
+        # Basic email validation
+        if "@" not in email or "." not in email:
+            error = "Please enter a valid email address"
             return render_template('register.html', title="Register", error=error)
 
         conn = get_db()
@@ -35,17 +41,16 @@ def register():
         password_hash = generate_password_hash(password)
 
         cursor.execute(
-            "INSERT INTO users (callsign, password_hash, is_admin) VALUES (?, ?, 0)",
-            (callsign, password_hash)
+            "INSERT INTO users (callsign, email, password_hash, is_admin, is_active) VALUES (?, ?, ?, 0, 1)",
+            (callsign, email, password_hash)
         )
         conn.commit()
 
-        # NEW: get the new user ID
         new_user_id = cursor.lastrowid
 
         # Auto-login after registration
         session['user'] = callsign
-        session['user_id'] = new_user_id          # <-- ADD THIS
+        session['user_id'] = new_user_id
         session['user_is_admin'] = False
 
         return redirect(url_for('main.index'))
@@ -61,7 +66,6 @@ def login():
     error = None
 
     if request.method == 'POST':
-        # NOTE: your form uses "username", so this is correct for your current HTML
         callsign = request.form.get('username', '').strip().upper()
         password = request.form.get('password', '')
 
@@ -71,13 +75,27 @@ def login():
         cursor.execute("SELECT * FROM users WHERE callsign = ?", (callsign,))
         user = cursor.fetchone()
 
-        if user and check_password_hash(user['password_hash'], password):
-            session['user'] = user['callsign']
-            session['user_id'] = user['id']              # <-- ADD THIS
-            session['user_is_admin'] = bool(user['is_admin'])
-            return redirect(url_for('main.index'))
-        else:
+        # User not found
+        if not user:
             error = "Invalid call sign or password"
+            return render_template('login.html', title="Login", error=error)
+
+        # Block inactive users
+        if not user['is_active']:
+            error = "Your account has been deactivated."
+            return render_template('login.html', title="Login", error=error)
+
+        # Password check
+        if not check_password_hash(user['password_hash'], password):
+            error = "Invalid call sign or password"
+            return render_template('login.html', title="Login", error=error)
+
+        # Successful login
+        session['user'] = user['callsign']
+        session['user_id'] = user['id']
+        session['user_is_admin'] = bool(user['is_admin'])
+
+        return redirect(url_for('main.index'))
 
     return render_template('login.html', title="Login", error=error)
 
