@@ -2,8 +2,11 @@ from flask import Flask
 from .database import init_db
 
 def create_app():
+    load_dotenv()  # Load .env file
+
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your-secret-key-here'
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key')
+
 
     # Initialize database
     init_db()
