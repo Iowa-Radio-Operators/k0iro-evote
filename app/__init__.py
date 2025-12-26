@@ -1,5 +1,6 @@
 from flask import Flask
 from .database import init_db
+from dotenv import load_dotenv
 
 def create_app():
     load_dotenv()  # Load .env file
