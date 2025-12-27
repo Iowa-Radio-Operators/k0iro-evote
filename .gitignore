@@ -46,3 +46,6 @@ pytest_cache/
 build/
 dist/
 *.egg-info/
+
+# Backups
+backups/
