@@ -1,28 +1,30 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Ballots for {{ vote.title }}</h2>
+<h2>Ballots for {{ vote['title'] }}</h2>
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Callsign</th>
-        <th>Selected Option</th>
-        <th>Actions</th>
-    </tr>
-
-    {% for b in ballots %}
-    <tr>
-        <td>{{ b.callsign }}</td>
-        <td>{{ b.label }}</td>
-        <td>
-            <a href="/admin/ballots/{{ b.ballot_id }}/delete"
-               onclick="return confirm('Delete this ballot?');">
-               Delete Ballot
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="text-align: left; padding: 8px;">Callsign</th>
+            <th style="text-align: left; padding: 8px;">Selected Option</th>
+            <th style="text-align: left; padding: 8px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ballot in ballots %}
+        <tr>
+            <td style="padding: 8px;">{{ ballot['callsign'] }}</td>
+            <td style="padding: 8px;">{{ ballot['option_text'] }}</td>
+            <td style="padding: 8px;">
+                <a href="/admin/ballots/{{ ballot['ballot_id'] }}/delete">Delete Ballot</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
-<br>
-<a href="/admin/votes">Back to Vote Management</a>
+<p style="margin-top: 1rem;">
+    <a href="/admin/votes">Back to Vote Management</a>
+</p>
 {% endblock %}

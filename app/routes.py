@@ -140,17 +140,17 @@ def edit_options(vote_id):
 @admin_votes.route('/admin/votes/<int:vote_id>/options/add', methods=['POST'])
 @admin_required
 def add_option(vote_id):
-    label = request.form.get('label', '').strip()
+    option_text = request.form.get('option_text', '').strip()
 
-    if not label:
+    if not option_text:
         return redirect(url_for('admin_votes.edit_options', vote_id=vote_id))
 
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO vote_options (vote_id, label) VALUES (?, ?)",
-        (vote_id, label)
+        "INSERT INTO vote_options (vote_id, option_text) VALUES (?, ?)",
+        (vote_id, option_text)
     )
     conn.commit()
 
@@ -206,7 +206,7 @@ def public_results_detail(vote_id):
         return "Results not available", 404
 
     cursor.execute("""
-        SELECT vo.label, COUNT(b.id) AS count
+        SELECT vo.option_text, COUNT(b.id) AS count
         FROM vote_options vo
         LEFT JOIN ballots b ON b.option_id = vo.id
         WHERE vo.vote_id = ?
@@ -354,7 +354,7 @@ def view_ballots(vote_id):
 
     # Get ballots with user + option labels
     cursor.execute("""
-        SELECT b.id AS ballot_id, u.callsign, vo.label
+        SELECT b.id AS ballot_id, u.callsign, vo.option_text
         FROM ballots b
         JOIN users u ON b.user_id = u.id
         JOIN vote_options vo ON b.option_id = vo.id
@@ -389,3 +389,30 @@ def delete_ballot(ballot_id):
     conn.commit()
 
     return redirect(url_for('admin_votes.view_ballots', vote_id=vote_id))
+
+# -------------------------
+# Edit Option
+# -------------------------
+@admin_votes.route('/admin/options/<int:option_id>/edit', methods=['POST'])
+@admin_required
+def edit_option(option_id):
+    new_text = request.form.get('option_text', '').strip()
+    
+    if not new_text:
+        return redirect(request.referrer)
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT vote_id FROM vote_options WHERE id = ?", (option_id,))
+    row = cursor.fetchone()
+    
+    if not row:
+        return "Option not found", 404
+    
+    vote_id = row['vote_id']
+    
+    cursor.execute("UPDATE vote_options SET option_text = ? WHERE id = ?", (new_text, option_id))
+    conn.commit()
+    
+    return redirect(url_for('admin_votes.edit_options', vote_id=vote_id))

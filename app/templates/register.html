@@ -4,14 +4,18 @@
 <h2>Register</h2>
 
 <form method="POST" style="max-width: 300px; width: 100%;">
+
     <label>Call Sign</label><br>
-    <input type="text" name="callsign" required style="width: 100%; padding: 8px;"><br><br>
+    <input type="text" name="callsign" required 
+           style="width: 100%; padding: 8px;"><br><br>
 
     <label>Password</label><br>
-    <input type="password" name="password" required style="width: 100%; padding: 8px;"><br><br>
+    <input type="password" name="password" required 
+           style="width: 100%; padding: 8px;"><br><br>
 
-    <label>Email:</label>
-    <input type="email" name="email" required>
+    <label>Email</label><br>
+    <input type="email" name="email" required 
+           style="width: 100%; padding: 8px;"><br><br>
 
     <button type="submit" style="padding: 8px 16px;">Register</button>
 </form>
@@ -19,4 +23,5 @@
 {% if error %}
     <p style="color: red; margin-top: 1rem;">{{ error }}</p>
 {% endif %}
+
 {% endblock %}

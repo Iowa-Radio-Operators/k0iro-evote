@@ -12,7 +12,7 @@
 
     {% for opt in options %}
     <tr {% if loop.index0 == 0 %} style="background:#d4ffd4;" {% endif %}>
-        <td>{{ opt.label }}</td>
+        <td>{{ opt.option_text }}</td>
         <td>{{ opt.count }}</td>
     </tr>
     {% endfor %}

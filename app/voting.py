@@ -79,8 +79,8 @@ def submit_vote():
 
     # Record the vote
     cursor.execute(
-        "INSERT INTO ballots (vote_id, option_id, user_id, callsign) VALUES (?, ?, ?, ?)",
-        (vote_id, option_id, user_id, callsign)
+        "INSERT INTO ballots (vote_id, option_id, user_id) VALUES (?, ?, ?)",
+        (vote_id, option_id, user_id)
     )
     conn.commit()
 

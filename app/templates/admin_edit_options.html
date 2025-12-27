@@ -1,37 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Edit Options for: {{ vote['title'] }}</h2>
+<h2>Add Options to Vote: {{ vote['title'] }}</h2>
 
-<h3>Existing Options</h3>
-<table border="1" cellpadding="8" cellspacing="0">
-    <tr>
-        <th>ID</th>
-        <th>Label</th>
-        <th>Actions</th>
-    </tr>
-
-    {% for opt in options %}
-    <tr>
-        <td>{{ opt['id'] }}</td>
-        <td>{{ opt['label'] }}</td>
-        <td>
-            <a href="/admin/options/{{ opt['id'] }}/delete">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-
-<hr>
-
-<h3>Add New Option</h3>
 <form method="POST" action="/admin/votes/{{ vote['id'] }}/options/add">
-    <label>Option Label:</label>
-    <input type="text" name="label" required>
+    <label>Option Text:</label>
+    <input type="text" name="option_text" required>
     <button type="submit">Add Option</button>
 </form>
 
-<br>
-<a href="/admin/votes">Back to Vote Management</a>
+<h3>Current Options</h3>
+<ul>
+    {% for opt in options %}
+        <li>
+            <form method="POST" action="{{ url_for('admin_votes.edit_option', option_id=opt['id']) }}" style="display:inline;">
+                <input type="text" name="option_text" value="{{ opt['option_text'] }}" required>
+                <button type="submit">Update</button>
+            </form>
+            <a href="{{ url_for('admin_votes.delete_option', option_id=opt['id']) }}" 
+               onclick="return confirm('Are you sure you want to delete this option?')"
+               style="color: red; margin-left: 10px;">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
 
+<a href="/admin">Back to Admin Dashboard</a>
 {% endblock %}
