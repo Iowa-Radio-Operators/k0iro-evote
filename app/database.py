@@ -24,15 +24,16 @@ def init_db():
         );
     """)
 
-    # Votes table (one active vote at a time)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS votes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            is_active INTEGER DEFAULT 1
-        );
-    """)
+# Votes table (one active vote at a time)
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS votes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        is_active INTEGER DEFAULT 1,
+        is_released INTEGER DEFAULT 0
+    );
+""")
 
     # Vote options
     cursor.execute("""
