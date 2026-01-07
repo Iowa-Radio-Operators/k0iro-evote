@@ -27,4 +27,8 @@ def create_app():
     app.register_blueprint(voting)
     app.register_blueprint(admin_votes)
 
+    # NEW: Setup centralized authentication routes
+    from .client_auth import setup_auth_routes
+    setup_auth_routes(app)
+
     return app

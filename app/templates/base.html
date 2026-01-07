@@ -30,13 +30,12 @@
       <a href="/">Home</a>
       <a href="/vote">Vote</a>
       <a href="/results">Results</a>
-      <a href="/register">Register</a>
 
-      {% if session.get('user') %}
+      {% if session.get('user') or session.get('authenticated') %}
           {% if session.get('user_is_admin') %}
               <a href="/admin">Admin</a>
           {% endif %}
-          <a href="/logout">Logout</a>
+          <a href="/logout">Logout ({{ session.get('user') }})</a>
       {% else %}
           <a href="/login">Login</a>
       {% endif %}
