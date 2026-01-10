@@ -14,6 +14,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # =====================================================
+# CONFIGURATION
+# =====================================================
+
+APP_CODE = 'evoting'
+APP_SECRET = os.getenv('APP_SECRET', 'CHANGE_ME_evoting_secret_key_2024')
+
+# URLs from environment
+CENTRAL_AUTH_URL = os.getenv('CENTRAL_AUTH_URL', 'https://members.k0iro.com')
+THIS_APP_URL = os.getenv('THIS_APP_URL', 'https://evoting.k0iro.com')
+
+# =====================================================
 # AUTHENTICATION FUNCTIONS
 # =====================================================
 
