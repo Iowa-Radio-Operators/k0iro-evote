@@ -1,19 +1,16 @@
-from functools import wraps
-from flask import session, redirect, url_for
+"""
+DEPRECATED: This file is replaced by client_auth.py
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
-            return redirect(url_for('auth.login'))
-        return f(*args, **kwargs)
-    return decorated_function
+Keep this file for now for backwards compatibility,
+but all decorators now come from client_auth.py
 
+To migrate, replace imports:
+  OLD: from .auth_helpers import login_required, admin_required
+  NEW: from .client_auth import login_required, admin_required
+"""
 
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session or not session.get('user_is_admin'):
-            return redirect(url_for('auth.login'))
-        return f(*args, **kwargs)
-    return decorated_function
+# Import from new centralized auth module
+from .client_auth import login_required, admin_required
+
+# Keep old functions as aliases for backwards compatibility
+__all__ = ['login_required', 'admin_required']
